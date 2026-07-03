@@ -14,15 +14,16 @@
 <header class="site-nav" id="site-nav">
   <a href="#topo" class="nav-mark" aria-label="Virtuoso — página inicial">
     <span class="logo logo--nav">
-      <img class="logo__img logo__img--default" src="logo/Logo_Virtuoso_branca.png" alt="Virtuoso" width="1920" height="1080">
-      <img class="logo__img logo__img--hover" src="logo/Logo_Virtuoso_berinjela.png" alt="" aria-hidden="true" width="1920" height="1080">
+      <img class="logo__img logo__img--default" src="logo/Logo_Virtuoso_branca.png" alt="Virtuoso" width="1920" height="1080" fetchpriority="high" decoding="async">
+      <img class="logo__img logo__img--hover" src="logo/Logo_Virtuoso_rosa.png" alt="" aria-hidden="true" width="1920" height="1080" decoding="async">
+      <img class="logo__img logo__img--conceito" src="logo/Logo_Virtuoso_branca.png" alt="" aria-hidden="true" width="1920" height="1080" decoding="async">
     </span>
   </a>
   <nav class="nav-links" aria-label="Navegação principal">
     <a href="#topo">Projetos</a>
     <a href="#conceito">Conceito</a>
     <a href="#menu">Menu</a>
-    <a href="#contato">Contato</a>
+    <a href="#contato">Contatos</a>
   </nav>
   <a href="https://wa.me/5521974930246" class="nav-cta" target="_blank" rel="noopener" aria-label="Reservar pelo WhatsApp">Reservar</a>
 </header>
@@ -110,19 +111,14 @@
 
   </section>
 
-  <section class="conceito" id="conceito" aria-label="Natural é sexy">
-    <div class="frame-media">
-      <img
-        src="img/conceito/natural-e-sexy.png"
-        alt="Bandeira rosa com a frase Natural é sexy"
-        loading="lazy"
-      >
+  <section class="conceito" id="conceito" aria-label="Conceito">
+    <div class="conceito__media">
+      <img src="img/conceito/parede.jpg" alt="Natural é sexy" width="1920" height="741" loading="lazy" decoding="async">
     </div>
   </section>
 
   <section class="menu-cta" id="menu" aria-label="Nosso menu de vinhos">
     <div class="menu-cta__inner">
-      <p class="eyebrow">Menu</p>
       <h2 class="menu-cta__title">Antes de vir, consulte nosso menu.</h2>
       <p class="menu-cta__body">
         Pensamos num cardápio autoral com insumos de produtores locais. Sejam da serra carioca ou do mar do Rio de Janeiro. Flertamos sempre com muitos vegetais e frutos do mar com opções pra compartilhar e se lambuzar.
@@ -140,8 +136,8 @@
       <div class="footer-mark-wrap">
         <p class="footer-mark">
           <span class="logo logo--footer logo--on-light">
-            <img class="logo__img logo__img--default" src="logo/Logo_Virtuoso_berinjela.png" alt="Virtuoso" width="1920" height="1080">
-            <img class="logo__img logo__img--hover" src="logo/Logo_Virtuoso_branca.png" alt="" aria-hidden="true" width="1920" height="1080">
+            <img class="logo__img logo__img--default" src="logo/Logo_Virtuoso_berinjela.png" alt="Virtuoso" width="1920" height="1080" loading="lazy" decoding="async">
+            <img class="logo__img logo__img--hover" src="logo/Logo_Virtuoso_branca.png" alt="" aria-hidden="true" width="1920" height="1080" loading="lazy" decoding="async">
           </span>
         </p>
         <p class="footer-manifesto">Vinhos naturais · Copanema, Rio de Janeiro</p>
@@ -180,12 +176,7 @@
 
     <div class="footer-bottom">
       <div class="footer-meta">
-        <span class="footer-copyright">© <span id="ano"></span>
-          <span class="logo logo--copyright logo--on-light">
-            <img class="logo__img logo__img--default" src="logo/Logo_Virtuoso_berinjela.png" alt="Virtuoso" width="1920" height="1080">
-            <img class="logo__img logo__img--hover" src="logo/Logo_Virtuoso_branca.png" alt="" aria-hidden="true" width="1920" height="1080">
-          </span>
-        </span>
+        <span class="footer-copyright">© <span id="ano"></span></span>
         <a href="#topo">Voltar ao topo</a>
       </div>
     </div>

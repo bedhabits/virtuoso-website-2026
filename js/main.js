@@ -48,9 +48,8 @@
         'Foto34 @vivacquafv..jpg',
         'gigios na mantega.jpeg',
         'hitoshi2.jpeg',
-        'IMG9467.png',
+        'IMG9467.jpg',
         'L1020574.jpg',
-        'P1010198.jpg',
         'Quimera_Dj.jpeg',
         'WhatsApp Image 2025-05-13 at 15.51.48.jpeg',
         'WhatsApp Image 2025-05-31 at 11.13.37.jpeg',
@@ -119,12 +118,99 @@
 
   initFooterLinkReveal();
 
+  function initNavObservers() {
+    const nav = document.getElementById('site-nav');
+    const conceito = document.getElementById('conceito');
+    const topo = document.getElementById('topo');
+    const navLinks = nav?.querySelector('.nav-links');
+    if (!nav) return;
+
+    let conceitoObserver = null;
+    let topoObserver = null;
+    let topoInBand = false;
+    let conceitoInBand = false;
+
+    function navBandRootMargin() {
+      const navH = Math.ceil(nav.getBoundingClientRect().height);
+      const bottomCrop = Math.max(window.innerHeight - navH, 0);
+      return `0px 0px -${bottomCrop}px 0px`;
+    }
+
+    function observerOptions() {
+      return {
+        root: null,
+        rootMargin: navBandRootMargin(),
+        threshold: 0,
+      };
+    }
+
+    function pastGalleryEnd() {
+      if (!topo) return false;
+      const navH = Math.ceil(nav.getBoundingClientRect().height);
+      return window.scrollY >= topo.offsetTop + topo.offsetHeight - navH;
+    }
+
+    function updateNavLinks() {
+      const showLinks = topoInBand && !conceitoInBand && !pastGalleryEnd();
+      nav.classList.toggle('nav--links-hidden', !showLinks);
+      if (navLinks) navLinks.setAttribute('aria-hidden', showLinks ? 'false' : 'true');
+    }
+
+    function createObservers() {
+      if (conceitoObserver) conceitoObserver.disconnect();
+      if (topoObserver) topoObserver.disconnect();
+
+      if (conceito) {
+        conceitoObserver = new IntersectionObserver(
+          ([entry]) => {
+            conceitoInBand = entry.isIntersecting;
+            nav.classList.toggle('nav--conceito', conceitoInBand);
+            updateNavLinks();
+          },
+          observerOptions()
+        );
+        conceitoObserver.observe(conceito);
+      }
+
+      if (topo) {
+        topoObserver = new IntersectionObserver(
+          ([entry]) => {
+            topoInBand = entry.isIntersecting;
+            updateNavLinks();
+          },
+          observerOptions()
+        );
+        topoObserver.observe(topo);
+      }
+
+      updateNavLinks();
+    }
+
+    createObservers();
+
+    let resizePending = false;
+    window.addEventListener('resize', () => {
+      if (resizePending) return;
+      resizePending = true;
+      requestAnimationFrame(() => {
+        resizePending = false;
+        createObservers();
+      });
+    }, { passive: true });
+
+    window.addEventListener('scroll', () => {
+      updateNavLinks();
+    }, { passive: true });
+  }
+
+  initNavObservers();
+
   function projectImages(slug, filenames) {
     const base = `img/projetos/${slug}/`;
     return filenames.map((name) => `${base}${encodeURIComponent(name)}`);
   }
 
-  function buildSlideshow(container, images, alt) {
+  function buildSlideshow(container, images, alt, prioritizeFirst = false) {
     if (images.length === 0) {
       container.innerHTML = `
         <div class="frame-placeholder" role="img" aria-label="${alt} — foto em breve">
@@ -139,8 +225,9 @@
       const img = document.createElement('img');
       img.src = src;
       img.alt = alt;
-      img.loading = i === 0 ? 'eager' : 'lazy';
-      if (i === 0) img.fetchPriority = 'high';
+      img.decoding = 'async';
+      img.loading = i === 0 && prioritizeFirst ? 'eager' : 'lazy';
+      if (i === 0 && prioritizeFirst) img.fetchPriority = 'high';
       img.classList.toggle('is-active', i === 0);
       container.appendChild(img);
       return img;
@@ -178,7 +265,7 @@
   }
 
   function initProjectSlideshows() {
-    const slideshows = new Map();
+    const frameData = new Map();
 
     PROJECTS.forEach((project) => {
       const frame = document.querySelector(`.gallery-frame[data-slug="${project.slug}"]`);
@@ -187,19 +274,35 @@
       const container = frame.querySelector('.frame-slideshow');
       if (!container) return;
 
-      const images = projectImages(project.slug, project.images);
-      const imgs = buildSlideshow(container, images, project.alt);
-      if (imgs) slideshows.set(frame, createSlideshowController(imgs));
+      frameData.set(frame, {
+        project,
+        container,
+        imgs: null,
+        ctrl: null,
+        built: false,
+      });
     });
 
-    return slideshows;
+    function ensureBuilt(frame, prioritizeFirst = false) {
+      const data = frameData.get(frame);
+      if (!data || data.built) return data;
+
+      const images = projectImages(data.project.slug, data.project.images);
+      const imgs = buildSlideshow(data.container, images, data.project.alt, prioritizeFirst);
+      data.built = true;
+      data.imgs = imgs;
+      if (imgs) data.ctrl = createSlideshowController(imgs);
+      return data;
+    }
+
+    return { frameData, ensureBuilt };
   }
 
   const track  = document.querySelector('.gallery-track');
   const frames = Array.from(document.querySelectorAll('.gallery-frame'));
   const giBtns = Array.from(document.querySelectorAll('.gi-btn'));
 
-  const slideshows = initProjectSlideshows();
+  const { frameData, ensureBuilt } = initProjectSlideshows();
 
   if (track && frames.length > 0) {
     let activeIdx = 0;
@@ -207,10 +310,15 @@
 
     function syncSlideshows(i) {
       frames.forEach((frame, fi) => {
-        const ctrl = slideshows.get(frame);
-        if (!ctrl) return;
-        if (fi === i) ctrl.start();
-        else ctrl.stop();
+        const data = frameData.get(frame);
+        if (!data) return;
+
+        if (fi === i) {
+          ensureBuilt(frame, fi === 0);
+          data.ctrl?.start();
+        } else {
+          data.ctrl?.stop();
+        }
       });
     }
 

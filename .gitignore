@@ -4,3 +4,6 @@ imgs/
 # macOS
 .DS_Store
 **/.DS_Store
+
+# Local backup of original project images (not served)
+img/projetos-backup/

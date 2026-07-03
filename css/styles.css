@@ -19,6 +19,7 @@
 :root {
   --roxo:         #4A0049;
   --rosa:         #FF888B;
+  --verde:        #011A0D;
   --ink:          #F8F1F0;
 
   --bg:           var(--roxo);
@@ -71,24 +72,29 @@ a:focus-visible, button:focus-visible {
   color: var(--rosa);
 }
 
-/* NAV */
+/* NAV — overlay grid: logo/CTA nos cantos, links no centro real da viewport */
 .site-nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 200;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   padding: clamp(0.75rem, 2.5vw, 1.25rem) var(--pad-h);
   background: transparent;
+  transition: color var(--dur) var(--ease);
 }
 
 .nav-mark {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  flex-shrink: 0;
+  min-width: 0;
   color: var(--ink);
 }
 
@@ -104,7 +110,8 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   transition: opacity var(--dur) var(--ease);
 }
-.logo__img--hover {
+.logo__img--hover,
+.logo__img--conceito {
   position: absolute;
   top: 0;
   left: 0;
@@ -127,21 +134,16 @@ a:focus-visible, button:focus-visible {
 .logo--nav .logo__img,
 .logo--footer .logo__img,
 .logo--nav .logo__img--hover,
-.logo--footer .logo__img--hover {
+.logo--footer .logo__img--hover,
+.logo--nav .logo__img--conceito {
   max-width: none;
   object-fit: contain;
   object-position: left center;
   transform: translateX(calc(-1 * var(--logo-inset-x)));
 }
-.logo--copyright {
-  height: 5rem;
-  vertical-align: -0.45em;
-  margin-left: 0.35rem;
-}
 .footer-copyright {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
 }
 
 .nav-mark:hover .logo__img--default,
@@ -162,11 +164,27 @@ a:focus-visible, button:focus-visible {
 }
 
 .nav-links {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex-wrap: nowrap;
   gap: clamp(1.25rem, 2.5vw, 2rem);
+  max-width: calc(100% - clamp(14rem, 32vw, 22rem));
   font-family: var(--f-serif);
   font-size: 0.9rem;
   color: rgba(248, 241, 240, 0.75);
+  transition: color var(--dur) var(--ease), opacity var(--dur) var(--ease), visibility var(--dur) var(--ease);
+}
+
+@media (min-width: 601px) {
+  .site-nav.nav--links-hidden .nav-links {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 .nav-links a {
   position: relative;
@@ -174,10 +192,15 @@ a:focus-visible, button:focus-visible {
 }
 .nav-links a:hover,
 .nav-links a:focus-visible {
-  color: var(--ink);
+  color: var(--rosa);
 }
 
 .nav-cta {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  position: relative;
+  z-index: 2;
   font-family: var(--f-serif);
   font-size: 0.9rem;
   color: var(--ink);
@@ -191,15 +214,50 @@ a:focus-visible, button:focus-visible {
   color: var(--rosa);
 }
 
+/* Nav sobre seção Conceito (parede rosa) */
+.site-nav.nav--conceito .nav-links {
+  color: rgba(1, 26, 13, 0.75);
+}
+.site-nav.nav--conceito .nav-links a:hover,
+.site-nav.nav--conceito .nav-links a:focus-visible {
+  color: var(--roxo);
+}
+.site-nav.nav--conceito .nav-cta {
+  color: var(--verde);
+  text-decoration-color: var(--roxo);
+}
+.site-nav.nav--conceito .nav-cta:hover,
+.site-nav.nav--conceito .nav-cta:focus-visible {
+  color: var(--roxo);
+}
+.site-nav.nav--conceito .logo__img--default {
+  opacity: 0;
+}
+.site-nav.nav--conceito .logo__img--hover {
+  opacity: 0;
+}
+.site-nav.nav--conceito .logo__img--conceito {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(11%) sepia(12%) saturate(7015%) hue-rotate(119deg) brightness(95%) contrast(101%);
+}
+.site-nav.nav--conceito .nav-mark:hover .logo__img--default,
+.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--default {
+  opacity: 1;
+}
+.site-nav.nav--conceito .nav-mark:hover .logo__img--hover,
+.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--hover,
+.site-nav.nav--conceito .nav-mark:hover .logo__img--conceito,
+.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--conceito {
+  opacity: 0;
+}
+
 @media (max-width: 600px) {
   .site-nav {
     padding: 0.5rem var(--pad-h);
-    gap: 0.5rem;
   }
   .nav-links { display: none; }
   .nav-cta {
     font-size: 0.85rem;
-    flex-shrink: 0;
   }
 }
 
@@ -327,31 +385,36 @@ a:focus-visible, button:focus-visible {
   .frame-caption { max-width: 85%; bottom: 2rem; }
 }
 
-/* CONCEITO — full-bleed como galeria, 1/3 viewport */
+/* CONCEITO — imagem full bleed */
 .conceito {
-  position: relative;
   width: 100%;
   height: calc(100svh / 3);
   overflow: hidden;
+  position: relative;
   padding: 0;
   margin: 0;
-  border-top: 1px solid rgba(248, 241, 240, 0.08);
-  background: var(--roxo);
+  border: none;
 }
-.conceito .frame-media {
+.conceito__media {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
-.conceito .frame-media img {
-  position: absolute;
-  inset: 0;
+.conceito__media img {
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* MENU */
 .menu-cta {
   background: var(--roxo);
-  padding: clamp(4rem, 10vw, 6rem) var(--pad-h);
+  padding: clamp(3rem, 7vw, 5rem) var(--pad-h);
   border-top: 1px solid rgba(248, 241, 240, 0.08);
 }
 .menu-cta__inner {
@@ -364,7 +427,7 @@ a:focus-visible, button:focus-visible {
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
   line-height: 1.15;
   color: var(--ink);
-  margin: 0.75rem 0 1rem;
+  margin: 0 0 1rem;
   max-width: 20ch;
 }
 .menu-cta__body {
@@ -394,7 +457,7 @@ a:focus-visible, button:focus-visible {
 .site-footer {
   background: var(--rosa);
   color: var(--roxo);
-  padding: clamp(3rem, 7vw, 4.5rem) var(--pad-h) clamp(1.5rem, 4vw, 2rem);
+  padding: clamp(2rem, 5vw, 3rem) var(--pad-h) clamp(1rem, 3vw, 1.5rem);
 }
 
 .footer-inner {
@@ -402,8 +465,8 @@ a:focus-visible, button:focus-visible {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
-  padding-bottom: 2rem;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
   border-bottom: 1px solid rgba(74, 0, 73, 0.15);
   max-width: var(--max-w);
   margin: 0 auto;
@@ -429,7 +492,7 @@ a:focus-visible, button:focus-visible {
   font-weight: 400;
   font-size: 0.85rem;
   color: rgba(74, 0, 73, 0.65);
-  margin: 0.75rem 0 0;
+  margin: 0.35rem 0 0;
   padding: 0;
   text-align: left;
 }
@@ -438,7 +501,7 @@ a:focus-visible, button:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 1rem;
   width: min(100%, 20rem);
 }
 
@@ -471,10 +534,13 @@ a:focus-visible, button:focus-visible {
 
 .footer-link--reveal {
   display: block;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid rgba(74, 0, 73, 0.12);
   color: var(--roxo);
   transition: color var(--dur) var(--ease);
+}
+.footer-link--reveal:last-child {
+  border-bottom: none;
 }
 .footer-link--reveal:hover,
 .footer-link--reveal:focus-visible,
@@ -532,7 +598,7 @@ a:focus-visible, button:focus-visible {
 .footer-location {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 1.5rem 0;
+  padding: 1rem 0;
   border-bottom: 1px solid rgba(74, 0, 73, 0.15);
 }
 
@@ -553,16 +619,15 @@ a:focus-visible, button:focus-visible {
   color: rgba(74, 0, 73, 0.6);
   line-height: 1.5;
   font-style: normal;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   align-items: center;
   gap: 1rem;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
   max-width: var(--max-w);
   margin: 0 auto;
 }
@@ -570,6 +635,8 @@ a:focus-visible, button:focus-visible {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: 1.25rem;
   font-family: var(--f-serif);
   font-size: 0.8rem;
