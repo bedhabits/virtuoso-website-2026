@@ -1,0 +1,6 @@
+# Pasta local de staging — fotos brutas e materiais de trabalho, não servidos pelo site
+imgs/
+
+# macOS
+.DS_Store
+**/.DS_Store
