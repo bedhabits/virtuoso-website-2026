@@ -122,13 +122,21 @@
     const nav = document.getElementById('site-nav');
     const conceito = document.getElementById('conceito');
     const topo = document.getElementById('topo');
+    const menu = document.getElementById('menu');
+    const contato = document.getElementById('contato');
     const navLinks = nav?.querySelector('.nav-links');
+    const navMark = nav?.querySelector('.nav-mark');
+    const navCta = nav?.querySelector('.nav-cta');
     if (!nav) return;
 
     let conceitoObserver = null;
     let topoObserver = null;
+    let menuObserver = null;
+    let contatoObserver = null;
     let topoInBand = false;
     let conceitoInBand = false;
+    let menuInBand = false;
+    let contatoInBand = false;
 
     function navBandRootMargin() {
       const navH = Math.ceil(nav.getBoundingClientRect().height);
@@ -156,9 +164,18 @@
       if (navLinks) navLinks.setAttribute('aria-hidden', showLinks ? 'false' : 'true');
     }
 
+    function updateNavMinimal() {
+      const minimal = menuInBand || contatoInBand;
+      nav.classList.toggle('nav--minimal', minimal);
+      if (navMark) navMark.setAttribute('aria-hidden', minimal ? 'true' : 'false');
+      if (navCta) navCta.setAttribute('aria-hidden', minimal ? 'true' : 'false');
+    }
+
     function createObservers() {
       if (conceitoObserver) conceitoObserver.disconnect();
       if (topoObserver) topoObserver.disconnect();
+      if (menuObserver) menuObserver.disconnect();
+      if (contatoObserver) contatoObserver.disconnect();
 
       if (conceito) {
         conceitoObserver = new IntersectionObserver(
@@ -183,7 +200,27 @@
         topoObserver.observe(topo);
       }
 
+      const minimalSections = [
+        { el: menu, set: (v) => { menuInBand = v; } },
+        { el: contato, set: (v) => { contatoInBand = v; } },
+      ];
+
+      minimalSections.forEach(({ el, set }) => {
+        if (!el) return;
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            set(entry.isIntersecting);
+            updateNavMinimal();
+          },
+          observerOptions()
+        );
+        observer.observe(el);
+        if (el === menu) menuObserver = observer;
+        else contatoObserver = observer;
+      });
+
       updateNavLinks();
+      updateNavMinimal();
     }
 
     createObservers();
@@ -220,7 +257,10 @@
       return null;
     }
 
+    const placeholder = container.querySelector('.frame-slideshow__placeholder');
     container.innerHTML = '';
+    if (placeholder) container.appendChild(placeholder);
+
     const imgs = images.map((src, i) => {
       const img = document.createElement('img');
       img.src = src;
@@ -232,6 +272,12 @@
       container.appendChild(img);
       return img;
     });
+
+    if (placeholder && imgs[0]) {
+      const markLoaded = () => container.classList.add('is-full-loaded');
+      if (imgs[0].complete) markLoaded();
+      else imgs[0].addEventListener('load', markLoaded, { once: true });
+    }
 
     container.removeAttribute('aria-hidden');
     return imgs.length > 1 ? imgs : null;
