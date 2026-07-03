@@ -77,21 +77,22 @@
       title: 'Eventos',
       alt: 'Eventos na Virtuoso',
       images: [
-        '20250903_VirtuosoVinhos_Expo_Laura_150.jpg',
-        '20250903_VirtuosoVinhos_Expo_Laura_177.jpg',
-        '20250903_VirtuosoVinhos_Expo_Laura_62.jpg',
-        '30_01_26_VIRTUOSO_CANTAO_082.jpg',
-        '30_01_26_VIRTUOSO_CANTAO_093.jpg',
-        '30_01_26_VIRTUOSO_CANTAO_132.jpg',
-        'WhatsApp Image 2026-07-03 at 14.03.28.jpeg',
-        'WhatsApp Image 2026-07-03 at 14.03.54 (3).jpeg',
-        'WhatsApp Image 2026-07-03 at 14.03.54 (4).jpeg',
-        'WhatsApp Image 2026-07-03 at 14.03.54.jpeg',
+        '01.jpeg',
+        '02.jpg',
+        '03.jpg',
+        '04.jpeg',
+        '05.jpeg',
+        '06.jpeg',
+        '07.jpg',
+        '08.jpg',
+        '09.jpg',
+        '10.jpg',
       ],
     },
   ];
 
   const SLIDE_INTERVAL = 4500;
+  const FIRST_SLIDE_INTERVAL = 2000;
 
   const yearEl = document.getElementById('ano');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -261,6 +262,112 @@
     return filenames.map((name) => `${base}${encodeURIComponent(name)}`);
   }
 
+  const FULL_IMAGE_TIMEOUT_MS = 8000;
+
+  function revealFullImage(img, fullSrc, container, onFullReady) {
+    let revealed = false;
+    let swapped = false;
+
+    const markFull = () => {
+      if (revealed) return;
+      revealed = true;
+      img.classList.remove('frame-slideshow__placeholder');
+      container.classList.add('is-full-loaded');
+      onFullReady?.();
+    };
+
+    const swapToFull = () => {
+      if (swapped) return;
+      swapped = true;
+
+      const onReady = () => {
+        if (img.decode) {
+          img.decode().then(markFull).catch(markFull);
+        } else {
+          markFull();
+        }
+      };
+
+      const filename = fullSrc.split('/').pop();
+      if (img.currentSrc.endsWith(filename)) {
+        onReady();
+        return;
+      }
+
+      img.addEventListener('load', onReady, { once: true });
+      img.addEventListener('error', onReady, { once: true });
+      img.src = fullSrc;
+      if (img.complete && img.naturalWidth > 0) onReady();
+    };
+
+    const preloader = new Image();
+    preloader.onload = swapToFull;
+    preloader.onerror = swapToFull;
+    if (isPriorityImage(img)) preloader.fetchPriority = 'high';
+    preloader.src = fullSrc;
+    if (preloader.complete) swapToFull();
+
+    setTimeout(swapToFull, FULL_IMAGE_TIMEOUT_MS);
+  }
+
+  function isPriorityImage(img) {
+    return img.loading === 'eager' || img.getAttribute('fetchpriority') === 'high';
+  }
+
+  function createSlideImage(src, alt, i, prioritizeFirstSlide) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = alt;
+    img.decoding = 'async';
+    img.loading = i === 0 && prioritizeFirstSlide ? 'eager' : 'lazy';
+    if (i === 0 && prioritizeFirstSlide) img.fetchPriority = 'high';
+    img.classList.toggle('is-active', i === 0);
+    return img;
+  }
+
+  function preloadImage(src) {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+  }
+
+  function scheduleIdle(fn, timeout = 2000) {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(fn, { timeout });
+    } else {
+      setTimeout(fn, 50);
+    }
+  }
+
+  function appendSlide(container, src, alt, i, imgs) {
+    const img = createSlideImage(src, alt, i, false);
+    container.appendChild(img);
+    imgs.push(img);
+    return img;
+  }
+
+  function scheduleRemainingSlides(container, images, alt, imgs, prioritizeFirst = false) {
+    if (images.length < 2) return;
+
+    const appendFrom = (start) => {
+      for (let i = start; i < images.length; i++) {
+        appendSlide(container, images[i], alt, i, imgs);
+      }
+    };
+
+    if (prioritizeFirst) {
+      if (imgs.length < 2) appendSlide(container, images[1], alt, 1, imgs);
+      preloadImage(images[1]);
+      scheduleIdle(() => appendFrom(2), 2000);
+      return;
+    }
+
+    scheduleIdle(() => {
+      if (imgs.length < 2) appendSlide(container, images[1], alt, 1, imgs);
+      scheduleIdle(() => appendFrom(2), 4000);
+    }, 400);
+  }
+
   function buildSlideshow(container, images, alt, prioritizeFirst = false) {
     if (images.length === 0) {
       container.innerHTML = `
@@ -273,53 +380,82 @@
 
     const placeholder = container.querySelector('.frame-slideshow__placeholder');
     container.innerHTML = '';
-    if (placeholder) container.appendChild(placeholder);
 
-    const imgs = images.map((src, i) => {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = alt;
-      img.decoding = 'async';
-      img.loading = i === 0 && prioritizeFirst ? 'eager' : 'lazy';
-      if (i === 0 && prioritizeFirst) img.fetchPriority = 'high';
-      img.classList.toggle('is-active', i === 0);
-      container.appendChild(img);
-      return img;
-    });
+    const imgs = [];
 
-    if (placeholder && imgs[0]) {
-      const markLoaded = () => container.classList.add('is-full-loaded');
-      if (imgs[0].complete) markLoaded();
-      else imgs[0].addEventListener('load', markLoaded, { once: true });
+    if (placeholder) {
+      placeholder.alt = alt;
+      placeholder.decoding = 'async';
+      placeholder.loading = prioritizeFirst ? 'eager' : 'lazy';
+      if (prioritizeFirst) placeholder.fetchPriority = 'high';
+      placeholder.classList.add('is-active');
+      container.appendChild(placeholder);
+      imgs.push(placeholder);
+
+      const onFirstFull = prioritizeFirst && images.length > 1
+        ? () => preloadImage(images[1])
+        : null;
+      revealFullImage(placeholder, images[0], container, onFirstFull);
+    } else {
+      const first = createSlideImage(images[0], alt, 0, prioritizeFirst);
+      container.appendChild(first);
+      imgs.push(first);
     }
 
     container.removeAttribute('aria-hidden');
-    return imgs.length > 1 ? imgs : null;
+
+    if (images.length <= 1) return null;
+
+    if (prioritizeFirst && images.length > 1) preloadImage(images[1]);
+
+    scheduleRemainingSlides(container, images, alt, imgs, prioritizeFirst);
+    return imgs;
   }
 
   function createSlideshowController(imgs) {
     let idx = 0;
     let timer = null;
+    let firstTick = null;
 
     function show(next) {
+      if (imgs.length < 2) return;
       imgs[idx].classList.remove('is-active');
-      idx = next;
+      idx = next % imgs.length;
       imgs[idx].classList.add('is-active');
     }
 
     function tick() {
-      show((idx + 1) % imgs.length);
+      show(idx + 1);
+    }
+
+    function clearTimers() {
+      if (firstTick) {
+        clearTimeout(firstTick);
+        firstTick = null;
+      }
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function runFirstTick() {
+      if (imgs.length < 2) {
+        firstTick = setTimeout(runFirstTick, 50);
+        return;
+      }
+      firstTick = null;
+      tick();
+      timer = setInterval(tick, SLIDE_INTERVAL);
     }
 
     return {
       start() {
-        if (timer || REDUCED) return;
-        timer = setInterval(tick, SLIDE_INTERVAL);
+        if (firstTick || timer || REDUCED) return;
+        firstTick = setTimeout(runFirstTick, FIRST_SLIDE_INTERVAL);
       },
       stop() {
-        if (!timer) return;
-        clearInterval(timer);
-        timer = null;
+        clearTimers();
       },
     };
   }
@@ -364,6 +500,11 @@
 
   const { frameData, ensureBuilt } = initProjectSlideshows();
 
+  const firstFrame = frames[0];
+  if (firstFrame) {
+    ensureBuilt(firstFrame, true);
+  }
+
   if (track && frames.length > 0) {
     let activeIdx = 0;
     let pending   = false;
@@ -382,21 +523,27 @@
       });
     }
 
+    if (firstFrame) {
+      frameData.get(firstFrame)?.ctrl?.start();
+    }
+
     function activateFrame(i) {
-      if (i === activeIdx && frames[i].classList.contains('is-active')) return;
+      const skipUi = i === activeIdx && frames[i].classList.contains('is-active');
       activeIdx = i;
 
-      frames.forEach((f, fi) => {
-        const on = fi === i;
-        f.classList.toggle('is-active', on);
-        f.setAttribute('aria-hidden', on ? 'false' : 'true');
-      });
+      if (!skipUi) {
+        frames.forEach((f, fi) => {
+          const on = fi === i;
+          f.classList.toggle('is-active', on);
+          f.setAttribute('aria-hidden', on ? 'false' : 'true');
+        });
 
-      giBtns.forEach((b, bi) => {
-        const on = bi === i;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
+        giBtns.forEach((b, bi) => {
+          const on = bi === i;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
 
       syncSlideshows(i);
     }

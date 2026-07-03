@@ -35,6 +35,7 @@
   --ease-fade:    cubic-bezier(0.45, 0.05, 0.55, 0.95);
   --dur:          0.25s;
   --dur-fade:     0.7s;
+  --dur-placeholder: 0.3s;
 
   --pad-h: clamp(1.25rem, 5vw, 3rem);
   --max-w: 1200px;
@@ -330,20 +331,20 @@ a:focus-visible, button:focus-visible {
   width: 100%; height: 100%;
   object-fit: cover;
   opacity: 1;
-  transition: opacity var(--dur-fade) var(--ease-fade);
-  z-index: 0;
+  z-index: 1;
 }
-.frame-slideshow.is-full-loaded .frame-slideshow__placeholder {
-  opacity: 0;
-  pointer-events: none;
-}
-.frame-slideshow img:not(.frame-slideshow__placeholder) {
+.frame-slideshow img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
   opacity: 0;
   transition: opacity var(--dur-fade) var(--ease-fade);
   z-index: 1;
+}
+.frame-slideshow.is-full-loaded img.is-active {
+  transition:
+    opacity var(--dur-fade) var(--ease-fade),
+    filter var(--dur-placeholder) var(--ease-fade);
 }
 .frame-slideshow img.is-active {
   opacity: 1;
