@@ -89,7 +89,18 @@ a:focus-visible, button:focus-visible {
   align-items: center;
   padding: clamp(0.75rem, 2.5vw, 1.25rem) var(--pad-h);
   background: transparent;
-  transition: color var(--dur) var(--ease);
+  transition:
+    color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    visibility var(--dur) var(--ease);
+}
+
+.site-nav.nav--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .nav-mark {
@@ -240,43 +251,6 @@ a:focus-visible, button:focus-visible {
   color: var(--rosa);
 }
 
-/* Nav sobre seção Conceito (parede rosa) */
-.site-nav.nav--conceito .nav-links {
-  color: rgba(1, 26, 13, 0.75);
-}
-.site-nav.nav--conceito .nav-links a:hover,
-.site-nav.nav--conceito .nav-links a:focus-visible {
-  color: var(--roxo);
-}
-.site-nav.nav--conceito .nav-cta {
-  color: var(--verde);
-  text-decoration-color: var(--roxo);
-}
-.site-nav.nav--conceito .nav-cta:hover,
-.site-nav.nav--conceito .nav-cta:focus-visible {
-  color: var(--roxo);
-}
-.site-nav.nav--conceito .logo__img--default {
-  opacity: 0;
-}
-.site-nav.nav--conceito .logo__img--hover {
-  opacity: 0;
-}
-.site-nav.nav--conceito .logo__img--conceito {
-  opacity: 1;
-  filter: brightness(0) saturate(100%) invert(11%) sepia(12%) saturate(7015%) hue-rotate(119deg) brightness(95%) contrast(101%);
-}
-.site-nav.nav--conceito .nav-mark:hover .logo__img--default,
-.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--default {
-  opacity: 1;
-}
-.site-nav.nav--conceito .nav-mark:hover .logo__img--hover,
-.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--hover,
-.site-nav.nav--conceito .nav-mark:hover .logo__img--conceito,
-.site-nav.nav--conceito .nav-mark:focus-visible .logo__img--conceito {
-  opacity: 0;
-}
-
 @media (max-width: 600px) {
   .site-nav {
     padding: 0.5rem var(--pad-h);
@@ -349,14 +323,12 @@ a:focus-visible, button:focus-visible {
 }
 .frame-slideshow {
   position: absolute; inset: 0;
+  background: var(--canvas);
 }
 .frame-slideshow__placeholder {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  filter: blur(12px);
-  transform: scale(1.06);
-  transform-origin: center;
   opacity: 1;
   transition: opacity var(--dur-fade) var(--ease-fade);
   z-index: 0;

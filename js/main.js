@@ -77,9 +77,16 @@
       title: 'Eventos',
       alt: 'Eventos na Virtuoso',
       images: [
+        '20250903_VirtuosoVinhos_Expo_Laura_150.jpg',
+        '20250903_VirtuosoVinhos_Expo_Laura_177.jpg',
+        '20250903_VirtuosoVinhos_Expo_Laura_62.jpg',
         '30_01_26_VIRTUOSO_CANTAO_082.jpg',
         '30_01_26_VIRTUOSO_CANTAO_093.jpg',
         '30_01_26_VIRTUOSO_CANTAO_132.jpg',
+        'WhatsApp Image 2026-07-03 at 14.03.28.jpeg',
+        'WhatsApp Image 2026-07-03 at 14.03.54 (3).jpeg',
+        'WhatsApp Image 2026-07-03 at 14.03.54 (4).jpeg',
+        'WhatsApp Image 2026-07-03 at 14.03.54.jpeg',
       ],
     },
   ];
@@ -164,11 +171,16 @@
       if (navLinks) navLinks.setAttribute('aria-hidden', showLinks ? 'false' : 'true');
     }
 
+    function updateNavHidden() {
+      nav.classList.toggle('nav--hidden', conceitoInBand);
+      nav.setAttribute('aria-hidden', conceitoInBand ? 'true' : 'false');
+    }
+
     function updateNavMinimal() {
       const minimal = menuInBand || contatoInBand;
       nav.classList.toggle('nav--minimal', minimal);
-      if (navMark) navMark.setAttribute('aria-hidden', minimal ? 'true' : 'false');
-      if (navCta) navCta.setAttribute('aria-hidden', minimal ? 'true' : 'false');
+      if (navMark) navMark.setAttribute('aria-hidden', minimal || conceitoInBand ? 'true' : 'false');
+      if (navCta) navCta.setAttribute('aria-hidden', minimal || conceitoInBand ? 'true' : 'false');
     }
 
     function createObservers() {
@@ -181,7 +193,8 @@
         conceitoObserver = new IntersectionObserver(
           ([entry]) => {
             conceitoInBand = entry.isIntersecting;
-            nav.classList.toggle('nav--conceito', conceitoInBand);
+            updateNavHidden();
+            updateNavMinimal();
             updateNavLinks();
           },
           observerOptions()
@@ -219,6 +232,7 @@
         else contatoObserver = observer;
       });
 
+      updateNavHidden();
       updateNavLinks();
       updateNavMinimal();
     }
