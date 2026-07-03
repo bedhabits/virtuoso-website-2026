@@ -34,7 +34,7 @@
   --ease:         cubic-bezier(0.65, 0, 0.35, 1);
   --ease-fade:    cubic-bezier(0.45, 0.05, 0.55, 0.95);
   --dur:          0.25s;
-  --dur-fade:     0.7s;
+  --dur-fade:     0.55s;
   --dur-placeholder: 0.3s;
 
   --pad-h: clamp(1.25rem, 5vw, 3rem);
@@ -266,7 +266,7 @@ a:focus-visible, button:focus-visible {
 .gallery { position: relative; background: var(--roxo); }
 
 .gallery-track {
-  height: 500vh;
+  height: 600vh;
   position: relative;
 }
 

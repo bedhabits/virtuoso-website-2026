@@ -14,8 +14,18 @@
         '03.jpg',
         '04.jpg',
         '05.jpg',
-        '06.jpg',
-        '07.jpg',
+      ],
+    },
+    {
+      slug: 'vinhos',
+      title: 'Vinhos',
+      alt: 'Vinhos naturais na Virtuoso',
+      images: [
+        'Ovirtuoso_@caianomidam_@thefarcreative-4458.jpg',
+        'Ovirtuoso_@caianomidam_@thefarcreative-4466.jpg',
+        'Ovirtuoso_@caianomidam_@thefarcreative-4488.jpg',
+        'Ovirtuoso_@caianomidam_@thefarcreative-4508.jpg',
+        'Ovirtuoso_@caianomidam_@thefarcreative-4554.jpg',
       ],
     },
     {
@@ -29,7 +39,7 @@
         '20241030_Shooting_VirtuosoVinhos_C03_36.jpg',
         '20241030_Shooting_VirtuosoVinhos_C04_25.jpg',
         '20241030_Shooting_VirtuosoVinhos_R03_03.jpg',
-        '20241030_Shooting_VirtuosoVinhos_R03_06.jpg',
+        'Ovirtuoso_@caianomidam_@thefarcreative-4776.jpg',
       ],
     },
     {
@@ -43,19 +53,10 @@
         '833a35fc-4a55-4c39-8b69-085e3b027c2f.jpg',
         'DAVE JEFFERS 2025 @davefotogram.jpg',
         'David_4.jpg',
-        'dj2.jpg',
-        'Foto Divulgação.jpg',
+        'Foto Divulgação.jpg',
         'Foto34 @vivacquafv..jpg',
-        'gigios na mantega.jpeg',
         'hitoshi2.jpeg',
-        'IMG9467.jpg',
-        'L1020574.jpg',
-        'Quimera_Dj.jpeg',
-        'WhatsApp Image 2025-05-13 at 15.51.48.jpeg',
         'WhatsApp Image 2025-05-31 at 11.13.37.jpeg',
-        'WhatsApp Image 2025-11-18 at 11.19.34.jpeg',
-        'WhatsApp Image 2025-12-10 at 10.41.49.jpeg',
-        'WhatsApp Image 2026-04-22 at 19.06.16.jpeg',
       ],
     },
     {
@@ -81,18 +82,15 @@
         '02.jpg',
         '03.jpg',
         '04.jpeg',
-        '05.jpeg',
         '06.jpeg',
         '07.jpg',
-        '08.jpg',
         '09.jpg',
-        '10.jpg',
       ],
     },
   ];
 
-  const SLIDE_INTERVAL = 4500;
-  const FIRST_SLIDE_INTERVAL = 2000;
+  const SLIDE_INTERVAL = 3500;
+  const FIRST_SLIDE_INTERVAL = 1500;
 
   const yearEl = document.getElementById('ano');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
