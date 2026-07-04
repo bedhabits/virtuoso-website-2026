@@ -435,6 +435,7 @@ a:focus-visible, button:focus-visible {
 /* CONCEITO — imagem full bleed + frase centralizada */
 .conceito {
   width: 100%;
+  min-height: max(33.333vh, 11rem);
   min-height: max(calc(100svh / 3), clamp(11rem, 35svh, 26rem));
   position: relative;
   isolation: isolate;
@@ -492,6 +493,7 @@ a:focus-visible, button:focus-visible {
 }
 @media (max-height: 480px) and (orientation: landscape) {
   .conceito {
+    min-height: max(40vh, 10rem);
     min-height: max(calc(100svh / 2.5), 10rem);
   }
   .conceito__phrase {
