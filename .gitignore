@@ -7,3 +7,12 @@ imgs/
 
 # Local backup of original project images (not served)
 img/projetos-backup/
+
+# Local dev / tooling (not deployed)
+node_modules/
+package.json
+package-lock.json
+test-conceito.html
+test-conceito-committed.html
+css/styles-committed.css
+img/projetos/o-bar/01-cjpeg.jpg
