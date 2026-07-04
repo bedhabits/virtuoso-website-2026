@@ -49,16 +49,16 @@
       title: 'DJs',
       alt: 'DJs na Virtuoso',
       images: [
-        '01.jpg',
-        '003_Bossa_BW.jpg',
-        '2608GIAN_001_0473.jpg',
-        '833a35fc-4a55-4c39-8b69-085e3b027c2f.jpg',
-        'DAVE JEFFERS 2025 @davefotogram.jpg',
-        'David_4.jpg',
-        'Foto Divulgação.jpg',
+        { file: '01.jpg', objectPosition: 'center top' },
+        { file: '003_Bossa_BW.jpg', objectPosition: 'center 5%' },
+        { file: '2608GIAN_001_0473.jpg', objectPosition: 'center 5%' },
+        { file: '833a35fc-4a55-4c39-8b69-085e3b027c2f.jpg', objectPosition: 'center 8%' },
+        { file: 'DAVE JEFFERS 2025 @davefotogram.jpg', objectPosition: 'center 5%' },
+        { file: 'David_4.jpg', objectPosition: 'center 5%' },
+        { file: 'Foto Divulgação.jpg', objectPosition: 'center 5%' },
         'Foto34 @vivacquafv..jpg',
-        'hitoshi2.jpeg',
-        'WhatsApp Image 2025-05-31 at 11.13.37.jpeg',
+        { file: 'hitoshi2.jpeg', objectPosition: 'center 5%' },
+        { file: 'WhatsApp Image 2025-05-31 at 11.13.37.jpeg', objectPosition: 'center 5%' },
       ],
     },
     {
@@ -257,9 +257,24 @@
 
   initNavObservers();
 
-  function projectImages(slug, filenames) {
+  function normalizeImageEntry(entry) {
+    if (typeof entry === 'string') return { file: entry };
+    return entry;
+  }
+
+  function projectImages(slug, entries) {
     const base = `img/projetos/${slug}/`;
-    return filenames.map((name) => `${base}${encodeURIComponent(name)}`);
+    return entries.map((entry) => {
+      const { file, objectPosition } = normalizeImageEntry(entry);
+      const src = `${base}${encodeURIComponent(file)}`;
+      return objectPosition ? { src, objectPosition } : { src };
+    });
+  }
+
+  function applySlideObjectPosition(img, objectPosition) {
+    if (!objectPosition) return;
+    img.dataset.objectPosition = '';
+    img.style.setProperty('--slide-object-position', objectPosition);
   }
 
   const FULL_IMAGE_TIMEOUT_MS = 8000;
@@ -314,7 +329,7 @@
     return img.loading === 'eager' || img.getAttribute('fetchpriority') === 'high';
   }
 
-  function createSlideImage(src, alt, i, prioritizeFirstSlide) {
+  function createSlideImage(src, alt, i, prioritizeFirstSlide, objectPosition) {
     const img = document.createElement('img');
     img.src = src;
     img.alt = alt;
@@ -322,6 +337,7 @@
     img.loading = i === 0 && prioritizeFirstSlide ? 'eager' : 'lazy';
     if (i === 0 && prioritizeFirstSlide) img.fetchPriority = 'high';
     img.classList.toggle('is-active', i === 0);
+    applySlideObjectPosition(img, objectPosition);
     return img;
   }
 
@@ -339,8 +355,8 @@
     }
   }
 
-  function appendSlide(container, src, alt, i, imgs) {
-    const img = createSlideImage(src, alt, i, false);
+  function appendSlide(container, slide, alt, i, imgs) {
+    const img = createSlideImage(slide.src, alt, i, false, slide.objectPosition);
     container.appendChild(img);
     imgs.push(img);
     return img;
@@ -357,7 +373,7 @@
 
     if (prioritizeFirst) {
       if (imgs.length < 2) appendSlide(container, images[1], alt, 1, imgs);
-      preloadImage(images[1]);
+      preloadImage(images[1].src);
       scheduleIdle(() => appendFrom(2), 2000);
       return;
     }
@@ -389,15 +405,22 @@
       placeholder.loading = prioritizeFirst ? 'eager' : 'lazy';
       if (prioritizeFirst) placeholder.fetchPriority = 'high';
       placeholder.classList.add('is-active');
+      applySlideObjectPosition(placeholder, images[0].objectPosition);
       container.appendChild(placeholder);
       imgs.push(placeholder);
 
       const onFirstFull = prioritizeFirst && images.length > 1
-        ? () => preloadImage(images[1])
+        ? () => preloadImage(images[1].src)
         : null;
-      revealFullImage(placeholder, images[0], container, onFirstFull);
+      revealFullImage(placeholder, images[0].src, container, onFirstFull);
     } else {
-      const first = createSlideImage(images[0], alt, 0, prioritizeFirst);
+      const first = createSlideImage(
+        images[0].src,
+        alt,
+        0,
+        prioritizeFirst,
+        images[0].objectPosition,
+      );
       container.appendChild(first);
       imgs.push(first);
     }
@@ -406,7 +429,7 @@
 
     if (images.length <= 1) return null;
 
-    if (prioritizeFirst && images.length > 1) preloadImage(images[1]);
+    if (prioritizeFirst && images.length > 1) preloadImage(images[1].src);
 
     scheduleRemainingSlides(container, images, alt, imgs, prioritizeFirst);
     return imgs;

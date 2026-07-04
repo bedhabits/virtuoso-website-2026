@@ -15,7 +15,11 @@
   src: url('../public/fonts/AwesomeSerifItalic-Tall.otf') format('opentype');
   font-weight: 400; font-style: italic; font-display: swap;
 }
-
+@font-face {
+  font-family: 'Awesome Serif Italic Medium Tall';
+  src: url('../public/fonts/AwesomeSerifItalic-MediumTall.otf') format('opentype');
+  font-weight: 500; font-style: italic; font-display: swap;
+}
 :root {
   --roxo:         #4A0049;
   --rosa:         #FF888B;
@@ -30,6 +34,7 @@
   --f-display:    'Bandit Condensed', 'Arial Narrow', sans-serif;
   --f-serif:      'Awesome Serif', Georgia, serif;
   --f-italic:     'Awesome Serif Italic', Georgia, serif;
+  --f-italic-medium: 'Awesome Serif Italic Medium Tall', 'Awesome Serif Italic', Georgia, serif;
 
   --ease:         cubic-bezier(0.65, 0, 0.35, 1);
   --ease-fade:    cubic-bezier(0.45, 0.05, 0.55, 0.95);
@@ -57,6 +62,7 @@ body {
   font-family: var(--f-serif);
   font-weight: 400;
   line-height: 1.55;
+  letter-spacing: 0.02em;
   overflow-x: hidden;
 }
 img, svg { display: block; max-width: 100%; }
@@ -75,7 +81,7 @@ a:focus-visible, button:focus-visible {
 .eyebrow {
   font-family: var(--f-display);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--rosa);
 }
@@ -287,23 +293,37 @@ a:focus-visible, button:focus-visible {
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-end;
+  padding: 0.6rem 0.35rem 0.6rem 1.75rem;
+  background: linear-gradient(to left, rgba(10, 10, 10, 0.32) 0%, rgba(10, 10, 10, 0.1) 55%, transparent 100%);
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .gi-btn {
   font-family: var(--f-serif);
   font-size: 0.8rem;
-  color: rgba(248, 241, 240, 0.35);
+  color: rgba(248, 241, 240, 0.92);
+  text-shadow:
+    0 1px 3px rgba(10, 10, 10, 0.6),
+    0 0 10px rgba(10, 10, 10, 0.35);
   transition: color var(--dur) var(--ease);
   padding: 0.1rem 0;
+  pointer-events: auto;
 }
-.gi-btn.is-active,
-.gi-btn:hover {
-  color: var(--ink);
+.gi-btn:hover,
+.gi-btn:focus-visible {
+  color: var(--rosa);
 }
 .gi-btn.is-active {
+  color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-color: var(--rosa);
+  text-shadow:
+    0 1px 4px rgba(10, 10, 10, 0.65),
+    0 0 12px rgba(10, 10, 10, 0.4);
 }
 
 .gallery-frame {
@@ -348,6 +368,18 @@ a:focus-visible, button:focus-visible {
 }
 .frame-slideshow img.is-active {
   opacity: 1;
+}
+@media (min-aspect-ratio: 3/2) {
+  .frame-slideshow img[data-object-position],
+  .frame-slideshow__placeholder[data-object-position] {
+    object-position: var(--slide-object-position, center);
+  }
+}
+@media (min-width: 1024px) and (min-aspect-ratio: 4/3) {
+  .gallery-frame[data-slug="djs"] .frame-slideshow img[data-object-position],
+  .gallery-frame[data-slug="djs"] .frame-slideshow__placeholder[data-object-position] {
+    object-position: var(--slide-object-position, center);
+  }
 }
 .frame-media img {
   width: 100%; height: 100%;
@@ -424,6 +456,28 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+.conceito__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 2rem) var(--pad-h);
+  pointer-events: none;
+}
+.conceito__phrase {
+  font-family: var(--f-italic-medium);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #00341c;
+  text-align: center;
+  margin: 0;
 }
 
 /* MENU */
@@ -529,7 +583,7 @@ a:focus-visible, button:focus-visible {
   font-weight: 400;
   font-size: clamp(1.2rem, 2.6vw, 1.55rem);
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   border-radius: var(--radius);
   transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
