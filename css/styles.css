@@ -432,12 +432,12 @@ a:focus-visible, button:focus-visible {
   .frame-caption { max-width: 85%; bottom: 2rem; }
 }
 
-/* CONCEITO — imagem full bleed */
+/* CONCEITO — imagem full bleed + frase centralizada */
 .conceito {
   width: 100%;
-  height: calc(100svh / 3);
-  overflow: hidden;
+  min-height: max(calc(100svh / 3), clamp(11rem, 35svh, 26rem));
   position: relative;
+  isolation: isolate;
   padding: 0;
   margin: 0;
   border: none;
@@ -445,25 +445,28 @@ a:focus-visible, button:focus-visible {
 .conceito__media {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 .conceito__media img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
 }
 .conceito__overlay {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   padding: clamp(1rem, 4vw, 2rem) var(--pad-h);
   pointer-events: none;
 }
@@ -471,13 +474,31 @@ a:focus-visible, button:focus-visible {
   font-family: var(--f-italic-medium);
   font-style: italic;
   font-weight: 500;
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  line-height: 1.1;
+  font-size: clamp(1.75rem, 6vw, 3.5rem);
+  line-height: 1.15;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #00341c;
   text-align: center;
+  text-wrap: balance;
+  max-width: 100%;
   margin: 0;
+}
+@media (max-width: 480px) {
+  .conceito__phrase {
+    letter-spacing: 0.1em;
+    font-size: clamp(1.625rem, 7.5vw, 2.25rem);
+  }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .conceito {
+    min-height: max(calc(100svh / 2.5), 10rem);
+  }
+  .conceito__phrase {
+    font-size: clamp(1.375rem, 4.5vw, 2rem);
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+  }
 }
 
 /* MENU */
