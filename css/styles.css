@@ -738,6 +738,10 @@ a:focus-visible, button:focus-visible {
   text-underline-offset: 3px;
 }
 
+.footer-copyright a {
+  text-decoration: none;
+}
+
 @media (max-width: 600px) {
   .footer-inner {
     grid-template-columns: 1fr;
