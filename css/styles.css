@@ -460,6 +460,25 @@ a:focus-visible, button:focus-visible {
   object-fit: cover;
   object-position: center center;
 }
+.conceito__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: auto;
+}
+.conceito__particles canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .conceito__particles {
+    display: none;
+  }
+}
 .conceito__overlay {
   position: absolute;
   inset: 0;
@@ -505,11 +524,29 @@ a:focus-visible, button:focus-visible {
 
 /* MENU */
 .menu-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--roxo);
   padding: clamp(3rem, 7vw, 5rem) var(--pad-h);
   border-top: 1px solid rgba(248, 241, 240, 0.08);
 }
+.menu-cta__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.menu-cta__grid canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .menu-cta__inner {
+  position: relative;
+  z-index: 1;
   max-width: var(--max-w);
   margin: 0 auto;
 }
@@ -526,10 +563,17 @@ a:focus-visible, button:focus-visible {
   font-family: var(--f-serif);
   font-weight: 400;
   font-size: 0.95rem;
-  color: rgba(248, 241, 240, 0.6);
+  color: #fff;
   max-width: 42ch;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+}
+.menu-cta .cta-link {
+  color: #fff;
+}
+.menu-cta .cta-link:hover,
+.menu-cta .cta-link:focus-visible {
+  color: var(--rosa);
 }
 
 .cta-link {
